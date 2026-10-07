@@ -1,7 +1,7 @@
 CC = clang
-CFLAGS = -Wall -Wextra -std=gnu99 -g -D_GNU_SOURCE
+CFLAGS = -Wall -Wextra -std=gnu99 -g -D_GNU_SOURCE -pthread
 ARCHSALIDA = eafitOS
-SRCS = main.c cat_datos.c cat_memoria.c cat_monitoreo.c cat_util.c cat_editor.c
+SRCS = main.c cat_datos.c cat_memoria.c cat_monitoreo.c cat_util.c cat_editor.c cat_compresor.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(ARCHSALIDA)

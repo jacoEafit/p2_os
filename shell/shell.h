@@ -109,6 +109,15 @@ int cmd_despedir(int argc, char **argv);  /* Syscalls: getuid */
 int cmd_hora(int argc, char **argv);      /* Syscalls: time */
 int cmd_fecha(int argc, char **argv);     /* Syscalls: time */
 
+/* --- Categoría: Compresor (cat_compresor.c) --- */
+int cmd_c_comprimir(int argc, char **argv);    /* Syscalls: open, fstat, pread, write, close, pthread_create, pthread_join */
+int cmd_c_descomprimir(int argc, char **argv); /* Syscalls: open, read, write, close, pthread_create, pthread_join */
+int cmd_c_estado(int argc, char **argv);       /* Sincronización: pthread_mutex_lock/unlock; Syscalls: clock_gettime */
+int cmd_c_cancelar(int argc, char **argv);     /* Syscalls: pthread_cond_broadcast, pthread_join, unlink */
+int cmd_c_verificar(int argc, char **argv);    /* Syscalls: open, read, close */
+int cmd_c_config(int argc, char **argv);       /* Sincronización: pthread_mutex_lock/unlock */
+void compresor_finalizar(void);               /* Espera (join) y libera el trabajo en curso al salir */
+
 int cmd_o(int argc, char **argv, Editor *editor);
 int cmd_p(int argc, char **argv, Editor *editor);
 int cmd_a(int argc, char **argv, Editor *editor);

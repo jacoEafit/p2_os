@@ -185,6 +185,50 @@ Command commands[] = {
         "Muestra la fecha actual del sistema.",
         "time(2)",
         cmd_fecha
+    },
+
+    /* --- Categoría: Compresor --- */
+    {
+        "c_comprimir", "compresor",
+        "c_comprimir <archivo>",
+        "Comprime un archivo con Huffman concurrente en segundo plano y genera <archivo>.huf.",
+        "open(2), fstat(2), pread(2), write(2), close(2), pthread_create(3), pthread_join(3)",
+        cmd_c_comprimir
+    },
+    {
+        "c_descomprimir", "compresor",
+        "c_descomprimir <archivo.huf> [salida]",
+        "Descomprime un archivo .huf en segundo plano.",
+        "open(2), read(2), write(2), close(2), pthread_create(3), pthread_join(3)",
+        cmd_c_descomprimir
+    },
+    {
+        "c_estado", "compresor",
+        "c_estado",
+        "Muestra la fase, la barra de progreso y los bloques procesados del trabajo actual o del último terminado.",
+        "pthread_mutex_lock(3), pthread_mutex_unlock(3), clock_gettime(2)",
+        cmd_c_estado
+    },
+    {
+        "c_cancelar", "compresor",
+        "c_cancelar",
+        "Cancela el trabajo en curso, termina los hilos y borra la salida parcial.",
+        "pthread_cond_broadcast(3), pthread_join(3), unlink(2)",
+        cmd_c_cancelar
+    },
+    {
+        "c_verificar", "compresor",
+        "c_verificar <original> <descomprimido>",
+        "Compara el checksum de dos archivos para comprobar la integridad.",
+        "open(2), read(2), close(2)",
+        cmd_c_verificar
+    },
+    {
+        "c_config", "compresor",
+        "c_config [<hilos> <tam_bloque>]",
+        "Sin argumentos muestra la configuración; con argumentos fija hilos (1-64) y tamaño de bloque (1K-64M) para el siguiente trabajo.",
+        "pthread_mutex_lock(3), pthread_mutex_unlock(3)",
+        cmd_c_config
     }
 };
 
@@ -267,7 +311,8 @@ void print_help(const char *arg) {
         printf("  " COLOR_CATEGORY "memoria" COLOR_RESET "    - Comandos de control de heap y memoria (sbrk, mmap, ...)\n");
         printf("  " COLOR_CATEGORY "monitoreo" COLOR_RESET "  - Comandos de procesos, señales y recursos (fork, exec, kill, getrusage)\n");
         printf("  " COLOR_CATEGORY "utilidades" COLOR_RESET " - Comandos útiles del sistema (saludar, hora, fecha, despedir)\n");
-        printf("  " COLOR_CATEGORY "editor" COLOR_RESET " - Comandos de edición de archivos (abrir, imprimir, añadir, borrar, etc)\n\n");
+        printf("  " COLOR_CATEGORY "editor" COLOR_RESET " - Comandos de edición de archivos (abrir, imprimir, añadir, borrar, etc)\n");
+        printf("  " COLOR_CATEGORY "compresor" COLOR_RESET "  - Compresión Huffman concurrente (comprimir, descomprimir, estado, cancelar, ...)\n\n");
         printf("Uso general:\n");
         printf("  " COLOR_PROMPT "help <categoria>" COLOR_RESET "  - Muestra comandos específicos de una categoría.\n");
         printf("  " COLOR_PROMPT "help <comando>" COLOR_RESET "    - Explica el uso y las syscalls de un comando específico.\n");
@@ -278,7 +323,8 @@ void print_help(const char *arg) {
 
     /* Caso 2: El usuario escribió 'help <categoria>': Mostrar comandos del grupo */
     if (strcmp(arg, "datos") == 0 || strcmp(arg, "memoria") == 0 || 
-        strcmp(arg, "monitoreo") == 0 || strcmp(arg, "utilidades") == 0) {
+        strcmp(arg, "monitoreo") == 0 || strcmp(arg, "utilidades") == 0 ||
+        strcmp(arg, "compresor") == 0) {
         printf(COLOR_TITLE "\n--- Categoría: %s ---\n" COLOR_RESET, arg);
         for (int i = 0; i < num_commands; i++) {
             if (strcmp(commands[i].category, arg) == 0) {
@@ -413,5 +459,7 @@ int main() {
         printf("\n");
     }
 
+    /* Recoger los hilos del compresor antes de terminar el proceso */
+    compresor_finalizar();
     return 0;
 }
