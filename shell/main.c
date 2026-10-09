@@ -189,43 +189,43 @@ Command commands[] = {
 
     /* --- Categoría: Compresor --- */
     {
-        "c_comprimir", "compresor",
-        "c_comprimir <archivo>",
+        "comp", "compresor",
+        "comp <archivo>",
         "Comprime un archivo con Huffman concurrente en segundo plano y genera <archivo>.huf.",
         "open(2), fstat(2), pread(2), write(2), close(2), pthread_create(3), pthread_join(3)",
         cmd_c_comprimir
     },
     {
-        "c_descomprimir", "compresor",
-        "c_descomprimir <archivo.huf> [salida]",
+        "des", "compresor",
+        "des <archivo.huf> [salida]",
         "Descomprime un archivo .huf en segundo plano.",
         "open(2), read(2), write(2), close(2), pthread_create(3), pthread_join(3)",
         cmd_c_descomprimir
     },
     {
-        "c_estado", "compresor",
-        "c_estado",
+        "es", "compresor",
+        "es",
         "Muestra la fase, la barra de progreso y los bloques procesados del trabajo actual o del último terminado.",
         "pthread_mutex_lock(3), pthread_mutex_unlock(3), clock_gettime(2)",
         cmd_c_estado
     },
     {
-        "c_cancelar", "compresor",
-        "c_cancelar",
+        "stop", "compresor",
+        "stop",
         "Cancela el trabajo en curso, termina los hilos y borra la salida parcial.",
         "pthread_cond_broadcast(3), pthread_join(3), unlink(2)",
         cmd_c_cancelar
     },
     {
-        "c_verificar", "compresor",
-        "c_verificar <original> <descomprimido>",
+        "ver", "compresor",
+        "ver <original> <descomprimido>",
         "Compara el checksum de dos archivos para comprobar la integridad.",
         "open(2), read(2), close(2)",
         cmd_c_verificar
     },
     {
-        "c_config", "compresor",
-        "c_config [<hilos> <tam_bloque>]",
+        "config", "compresor",
+        "config [<hilos> <tam_bloque>]",
         "Sin argumentos muestra la configuración; con argumentos fija hilos (1-64) y tamaño de bloque (1K-64M) para el siguiente trabajo.",
         "pthread_mutex_lock(3), pthread_mutex_unlock(3)",
         cmd_c_config
@@ -396,13 +396,16 @@ int main() {
     printf(COLOR_INFO "    Escribe 'help' para iniciar. Desarrollado en C.\n" COLOR_RESET);
     printf(COLOR_TITLE "========================================================\n\n" COLOR_RESET);
 
+    compresor_monitor_iniciar();
+
     while (1) {
         /* Imprimir prompt cian interactivo */
-        printf(COLOR_PROMPT "eafitOS> " COLOR_RESET);
-        fflush(stdout); /* Asegurar que se muestre en pantalla antes de bloquear en fgets */
+        compresor_prompt_imprimir(); /* ya hace fflush; además marca que la shell espera entrada */
 
         /* Leer línea de entrada. Retorna NULL en EOF (Ctrl+D) */
-        if (fgets(line, sizeof(line), stdin) == NULL) {
+        char *leida = fgets(line, sizeof(line), stdin);
+        compresor_entrada_recibida();
+        if (leida == NULL) {
             printf("\n");
             break;
         }

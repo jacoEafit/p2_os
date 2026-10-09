@@ -198,6 +198,11 @@ int cmd_a(int argc, char *argv[], Editor *editor)
         return -1;
     }
 
+    if (compresor_fd_en_uso(editor->fd)) {
+        printf(COLOR_ERROR "El archivo está siendo procesado por el compresor; no se puede modificar. Usa es o stop.\n" COLOR_RESET);
+        return -1;
+    }
+
     if (argc < 2) { // verificar que llegue al menos una palabra de texto
         printf(COLOR_ERROR "Uso: a [texto]\n" COLOR_RESET);
         return -1;
@@ -303,6 +308,11 @@ int cmd_d(int argc, char *argv[], Editor *editor)
 {
     if (editor->fd == -1) { // verificar que haya archivo abierto
         printf(COLOR_ERROR "No hay un archivo abierto. Usa 'o <archivo>' primero.\n" COLOR_RESET);
+        return -1;
+    }
+
+    if (compresor_fd_en_uso(editor->fd)) {
+        printf(COLOR_ERROR "El archivo está siendo procesado por el compresor; no se puede modificar. Usa es o stop.\n" COLOR_RESET);
         return -1;
     }
 
@@ -429,6 +439,11 @@ int cmd_i(int argc, char *argv[], Editor *editor)
 {
     if (editor->fd == -1) { // verificar que haya archivo abierto
         printf(COLOR_ERROR "No hay un archivo abierto. Usa 'o <archivo>' primero.\n" COLOR_RESET);
+        return -1;
+    }
+
+    if (compresor_fd_en_uso(editor->fd)) {
+        printf(COLOR_ERROR "El archivo está siendo procesado por el compresor; no se puede modificar. Usa es o stop.\n" COLOR_RESET);
         return -1;
     }
 

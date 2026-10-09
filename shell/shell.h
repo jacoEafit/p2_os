@@ -116,6 +116,11 @@ int cmd_c_estado(int argc, char **argv);       /* Sincronización: pthread_mutex
 int cmd_c_cancelar(int argc, char **argv);     /* Syscalls: pthread_cond_broadcast, pthread_join, unlink */
 int cmd_c_verificar(int argc, char **argv);    /* Syscalls: open, read, close */
 int cmd_c_config(int argc, char **argv);       /* Sincronización: pthread_mutex_lock/unlock */
+void compresor_prompt_imprimir(void);          /* Imprime el prompt (con progreso si hay trabajo) */
+void compresor_entrada_recibida(void);         /* La shell ya no espera entrada */
+void compresor_monitor_iniciar(void);          /* Hilo que refresca el progreso en el prompt */
+int compresor_fd_en_uso(int fd);               /* 1 si el fd es entrada/salida de un trabajo en curso */
+int compresor_ruta_en_uso(const char *ruta);   /* Igual, pero por ruta (compara dev/ino) */
 void compresor_finalizar(void);               /* Espera (join) y libera el trabajo en curso al salir */
 
 int cmd_o(int argc, char **argv, Editor *editor);

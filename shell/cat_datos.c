@@ -31,6 +31,11 @@ int cmd_d_create(int argc, char **argv) {
     const char *text = argv[2];
     size_t len = strlen(text);
 
+    if (compresor_ruta_en_uso(filename)) {
+        printf(COLOR_ERROR "'%s' está siendo procesado por el compresor; no se puede sobrescribir.\n" COLOR_RESET, filename);
+        return 1;
+    }
+
     /* 1. LLAMADA AL SISTEMA: open */
     LOG_SYSCALL("open", "\"%s\", O_WRONLY|O_CREAT|O_TRUNC, 0644", filename);
     int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -192,6 +197,11 @@ int cmd_d_copy(int argc, char **argv) {
     const char *dst_filename = argv[2];
     char buffer[512];
     ssize_t bytes_read, bytes_written;
+
+    if (compresor_ruta_en_uso(dst_filename)) {
+        printf(COLOR_ERROR "'%s' está siendo procesado por el compresor; no se puede sobrescribir.\n" COLOR_RESET, dst_filename);
+        return 1;
+    }
 
     /* 1. Abrir archivo origen (Lectura) */
     LOG_SYSCALL("open", "\"%s\", O_RDONLY", src_filename);
